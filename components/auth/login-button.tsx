@@ -8,7 +8,7 @@ interface LoginButtonProps {
 	asChild?: boolean;
 }
 
-const LoginButton = ({ children, mode = "redirect", asChild }: LoginButtonProps) => {
+export const LoginButton = ({ children, mode = "redirect", asChild }: LoginButtonProps) => {
 	const router = useRouter();
 
 	const onClick = () => {
@@ -25,5 +25,3 @@ const LoginButton = ({ children, mode = "redirect", asChild }: LoginButtonProps)
 		</span>
 	);
 };
-
-export default LoginButton;
