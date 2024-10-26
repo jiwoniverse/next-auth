@@ -6,8 +6,8 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { LoginSchema } from "@/schemas";
-import { login } from "@/actions/login";
+import { RegisterSchema } from "@/schemas";
+import { register } from "@/actions/register";
 import { CardWrapper } from "@/components/auth/card-wrapper";
 import {
 	Form,
@@ -22,25 +22,26 @@ import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 
-export const LoginForm = () => {
+export const RegisterForm = () => {
 	const [error, setError] = useState<string | undefined>("");
 	const [success, setSuccess] = useState<string | undefined>("");
 	const [isPending, startTransition] = useTransition();
 
-	const form = useForm<z.infer<typeof LoginSchema>>({
-		resolver: zodResolver(LoginSchema),
+	const form = useForm<z.infer<typeof RegisterSchema>>({
+		resolver: zodResolver(RegisterSchema),
 		defaultValues: {
 			email: "",
 			password: "",
+			name: "",
 		},
 	});
 
-	const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+	const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
 		setError("");
 		setSuccess("");
 
 		startTransition(() => {
-			login(values).then((data) => {
+			register(values).then((data) => {
 				setError(data.error);
 				setSuccess(data.success);
 			});
@@ -49,15 +50,28 @@ export const LoginForm = () => {
 
 	return (
 		<CardWrapper
-			headerTitle="로그인"
-			headerLabel="로그인하고 더 많은 정보를 확인해보세요."
-			backButtonLabel="계정이 없으신가요?"
-			backButtonHref="/auth/register"
+			headerTitle="회원가입"
+			headerLabel="회원가입 후에 더 많은 정보를 확인해보세요."
+			backButtonLabel="이미 가입 되어있으신가요?"
+			backButtonHref="/auth/login"
 			showSocial
 		>
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 					<div className="space-y-4">
+						<FormField
+							control={form.control}
+							name="name"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>이름</FormLabel>
+									<FormControl>
+										<Input {...field} disabled={isPending} placeholder="홍길동" />
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
 						<FormField
 							control={form.control}
 							name="email"
@@ -88,7 +102,7 @@ export const LoginForm = () => {
 					<FormError message={error} />
 					<FormSuccess message={success} />
 					<Button disabled={isPending} type="submit" className="w-full">
-						로그인
+						가입하기
 					</Button>
 				</form>
 			</Form>
