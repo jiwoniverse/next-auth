@@ -33,5 +33,5 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
 
 	// TODO: 이메일 확인용 토큰 전송
 
-	return { success: "메일이 전송되었습니다." };
+	return { success: "계정이 생성되었습니다." };
 };
