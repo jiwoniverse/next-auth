@@ -28,9 +28,25 @@ declare module "next-auth" {
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
 	adapter: PrismaAdapter(db),
+	pages: {
+		signIn: "/auth/login",
+		error: "/auth/error",
+	},
+	events: {
+		async linkAccount({ user }) {
+			await db.user.update({
+				where: { id: user.id },
+				data: { emailVerified: new Date() },
+			});
+		},
+	},
 	callbacks: {
-		async signIn({ user }) {
+		async signIn({ user, account }) {
 			if (!user.id) return false;
+
+			if (account?.provider === "google" || account?.provider === "github") {
+				return true;
+			}
 
 			const existingUser = await getUserById(user.id);
 
