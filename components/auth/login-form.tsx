@@ -46,7 +46,7 @@ export const LoginForm = () => {
 		startTransition(() => {
 			login(values).then((data) => {
 				setError(data?.error);
-				// setSuccess(data?.success);
+				setSuccess(data?.success);
 			});
 		});
 	};
@@ -89,7 +89,7 @@ export const LoginForm = () => {
 							)}
 						/>
 					</div>
-					<FormError message={error || getLoginErrorMessage(errorQuery ?? "")} />
+					<FormError message={error || errorQuery ? getLoginErrorMessage(errorQuery ?? "") : ""} />
 					<FormSuccess message={success} />
 					<Button disabled={isPending} type="submit" className="w-full">
 						로그인

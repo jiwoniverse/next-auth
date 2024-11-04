@@ -3,9 +3,12 @@
 import * as z from "zod";
 import bcrypt from "bcryptjs";
 
-import { db } from "@/lib/db";
-import { getUserByEmail } from "@/data/user";
 import { RegisterSchema } from "@/schemas";
+import { getUserByEmail } from "@/data/user";
+import { db } from "@/lib/db";
+
+import { generateVerificationToken } from "@/lib/tokens";
+import { sendVerificationEmail } from "@/lib/mail";
 
 export const register = async (values: z.infer<typeof RegisterSchema>) => {
 	const validatedFields = RegisterSchema.safeParse(values);
@@ -31,7 +34,8 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
 		},
 	});
 
-	// TODO: 이메일 확인용 토큰 전송
+	const verificationToken = await generateVerificationToken(email);
+	await sendVerificationEmail(verificationToken.email, verificationToken.token);
 
-	return { success: "계정이 생성되었습니다." };
+	return { success: "입력하신 이메일로 전송된 메일을 확인해주세요." };
 };
