@@ -17,7 +17,7 @@ export default function Home() {
 				<h1 className={cn("text-4xl font-semibold text-white drop-shadow-md", font.className)}>
 					로그인 및 회원가입
 				</h1>
-				<p className="text-white text-lg">A simple authentication service</p>
+				<p className="text-white text-lg">Auth.js로 인증 기능 구현하기</p>
 				<div>
 					<LoginButton>
 						<Button variant="secondary" size="lg">
