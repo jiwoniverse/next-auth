@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useSearchParams } from "next/navigation";
 
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ResetSchema } from "@/schemas";
-import { reset } from "@/actions/reset";
+import { NewPasswordSchema } from "@/schemas";
+import { newPassword } from "@/actions/new-password";
 
 import { CardWrapper } from "@/components/auth/card-wrapper";
 import {
@@ -22,24 +23,27 @@ import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 
-export const ResetForm = () => {
+export const NewPasswordForm = () => {
+	const searchParams = useSearchParams();
+	const token = searchParams.get("token");
+
 	const [error, setError] = useState<string | undefined>("");
 	const [success, setSuccess] = useState<string | undefined>("");
 	const [isPending, startTransition] = useTransition();
 
-	const form = useForm<z.infer<typeof ResetSchema>>({
-		resolver: zodResolver(ResetSchema),
+	const form = useForm<z.infer<typeof NewPasswordSchema>>({
+		resolver: zodResolver(NewPasswordSchema),
 		defaultValues: {
-			email: "",
+			password: "",
 		},
 	});
 
-	const onSubmit = (values: z.infer<typeof ResetSchema>) => {
+	const onSubmit = (values: z.infer<typeof NewPasswordSchema>) => {
 		setError("");
 		setSuccess("");
 
 		startTransition(() => {
-			reset(values).then((data) => {
+			newPassword(values, token).then((data) => {
 				setError(data?.error);
 				setSuccess(data?.success);
 			});
@@ -48,8 +52,8 @@ export const ResetForm = () => {
 
 	return (
 		<CardWrapper
-			headerTitle="비밀번호 초기화"
-			headerLabel="비밀번호 초기화를 위해 이메일을 입력해주세요."
+			headerTitle="새로운 비밀번호 설정"
+			headerLabel="새로운 비밀번호를 설정해주세요."
 			backButtonLabel="로그인으로 돌아가기"
 			backButtonHref="/auth/login"
 			showSocial
@@ -59,12 +63,12 @@ export const ResetForm = () => {
 					<div className="space-y-4">
 						<FormField
 							control={form.control}
-							name="email"
+							name="password"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>이메일</FormLabel>
+									<FormLabel>비밀번호</FormLabel>
 									<FormControl>
-										<Input {...field} disabled={isPending} placeholder="email@example.com" />
+										<Input {...field} disabled={isPending} placeholder="********" type="password" />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -74,7 +78,7 @@ export const ResetForm = () => {
 					<FormError message={error} />
 					<FormSuccess message={success} />
 					<Button disabled={isPending} type="submit" className="w-full">
-						확인 이메일 전송
+						비밀번호 초기화하기
 					</Button>
 				</form>
 			</Form>

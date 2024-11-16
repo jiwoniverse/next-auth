@@ -71,4 +71,5 @@ model PasswordResetToken {
   expires DateTime
 
   @@unique([email, token])
+  @@map("password_reset_tokens")
 }
