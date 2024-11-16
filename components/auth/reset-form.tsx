@@ -1,16 +1,13 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useSearchParams } from "next/navigation";
-import Link from "next/link";
 
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getLoginErrorMessage } from "@/lib/errorMessages";
+import { ResetSchema } from "@/schemas";
+import { reset } from "@/actions/reset";
 
-import { LoginSchema } from "@/schemas";
-import { login } from "@/actions/login";
 import { CardWrapper } from "@/components/auth/card-wrapper";
 import {
 	Form,
@@ -25,27 +22,24 @@ import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 
-export const LoginForm = () => {
-	const searchParams = useSearchParams();
-	const errorQuery = searchParams.get("error");
+export const ResetForm = () => {
 	const [error, setError] = useState<string | undefined>("");
 	const [success, setSuccess] = useState<string | undefined>("");
 	const [isPending, startTransition] = useTransition();
 
-	const form = useForm<z.infer<typeof LoginSchema>>({
-		resolver: zodResolver(LoginSchema),
+	const form = useForm<z.infer<typeof ResetSchema>>({
+		resolver: zodResolver(ResetSchema),
 		defaultValues: {
 			email: "",
-			password: "",
 		},
 	});
 
-	const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+	const onSubmit = (values: z.infer<typeof ResetSchema>) => {
 		setError("");
 		setSuccess("");
 
 		startTransition(() => {
-			login(values).then((data) => {
+			reset(values).then((data) => {
 				setError(data?.error);
 				setSuccess(data?.success);
 			});
@@ -54,10 +48,10 @@ export const LoginForm = () => {
 
 	return (
 		<CardWrapper
-			headerTitle="로그인"
-			headerLabel="로그인하고 더 많은 정보를 확인해보세요."
-			backButtonLabel="계정이 없으신가요?"
-			backButtonHref="/auth/register"
+			headerTitle="비밀번호 초기화"
+			headerLabel="새로운 비밀번호 설정하기"
+			backButtonLabel="로그인으로 돌아가기"
+			backButtonHref="/auth/login"
 			showSocial
 		>
 			<Form {...form}>
@@ -76,27 +70,11 @@ export const LoginForm = () => {
 								</FormItem>
 							)}
 						/>
-						<FormField
-							control={form.control}
-							name="password"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>비밀번호</FormLabel>
-									<FormControl>
-										<Input {...field} disabled={isPending} placeholder="********" type="password" />
-									</FormControl>
-									<Button size="sm" variant="link" asChild className="px-0 font-normal">
-										<Link href="/auth/reset">비밀번호를 잊으셨나요?</Link>
-									</Button>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
 					</div>
-					<FormError message={error || errorQuery ? getLoginErrorMessage(errorQuery ?? "") : ""} />
+					<FormError message={error} />
 					<FormSuccess message={success} />
 					<Button disabled={isPending} type="submit" className="w-full">
-						로그인
+						확인 이메일 전송
 					</Button>
 				</form>
 			</Form>
